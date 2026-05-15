@@ -498,7 +498,6 @@ div[data-testid="stSidebar"] .stButton > button {
 """, unsafe_allow_html=True)
 
 # ── Lazy imports ─────────────────────────────────────────────────────────────
-from scraper import scrape_website, clear_scrape_cache, SCRAPED_FILE
 from rag_pipeline import initialize_rag, query_rag, vectorstore_exists, clear_vectorstore
 
 # ── Session state ─────────────────────────────────────────────────────────────
