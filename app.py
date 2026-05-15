@@ -497,8 +497,8 @@ div[data-testid="stSidebar"] .stButton > button {
 </style>
 """, unsafe_allow_html=True)
 
-# ── Lazy imports ─────────────────────────────────────────────────────────────
-from rag_pipeline import initialize_rag, query_rag, vectorstore_exists, clear_vectorstore
+# ── Imports ─────────────────────────────────────────────────────────────
+from rag_pipeline import initialize_rag, query_rag, vectorstore_exists
 
 # ── Session state ─────────────────────────────────────────────────────────────
 if "messages" not in st.session_state:
@@ -546,12 +546,10 @@ with st.sidebar:
     # System status
     st.markdown('<span class="sb-section-label">System Status</span>', unsafe_allow_html=True)
 
-    scrape_ok = os.path.exists(SCRAPED_FILE)
     vs_ok = vectorstore_exists()
     init_ok = st.session_state.is_initialized
 
     for label, ok, on_label, off_label in [
-        ("Scrape Cache",  scrape_ok, "Ready",   "Missing"),
         ("Vector Store",  vs_ok,     "Ready",   "Missing"),
         ("Chatbot",       init_ok,   "Online",  "Offline"),
     ]:
@@ -565,47 +563,18 @@ with st.sidebar:
 
     st.markdown('<hr class="sb-divider">', unsafe_allow_html=True)
 
-    # Initialize button
+    # Initialize info
     if not st.session_state.is_initialized:
-        if st.button("🚀  Initialize Chatbot", use_container_width=True):
-            with st.spinner("Starting up…"):
-                try:
-                    scrape_progress = st.progress(0, text="Scraping website…")
-
-                    def scrape_cb(current, total, msg):
-                        pct = min(int((current / max(total, 1)) * 100), 100)
-                        scrape_progress.progress(pct, text=msg[:60])
-
-                    pages = scrape_website(progress_callback=scrape_cb)
-                    scrape_progress.progress(100, text=f"✓ Scraped {len(pages)} pages")
-                    time.sleep(0.4)
-                    scrape_progress.empty()
-
-                    if not pages:
-                        st.error("No pages scraped. Check internet connection.")
-                        st.stop()
-
-                    rag_status = st.empty()
-
-                    def rag_cb(msg):
-                        rag_status.info(f"⚙️ {msg}")
-
-                    chain = initialize_rag(pages, progress_callback=rag_cb)
-                    rag_status.empty()
-
-                    st.session_state.rag_chain = chain
-                    st.session_state.is_initialized = True
-                    st.session_state.init_error = None
-                    st.success("Chatbot is ready!")
-                    time.sleep(0.8)
-                    st.rerun()
-
-                except ValueError as e:
-                    st.session_state.init_error = str(e)
-                    st.error(str(e))
-                except Exception as e:
-                    st.session_state.init_error = str(e)
-                    st.error(f"Initialization failed: {e}")
+        if not vectorstore_exists():
+            st.error("Vector store missing! Please ensure 'vectorstore/' folder is uploaded.")
+        else:
+            st.info("Initializing chatbot...")
+            try:
+                st.session_state.rag_chain = initialize_rag([], progress_callback=lambda x: None)
+                st.session_state.is_initialized = True
+                st.rerun()
+            except Exception as e:
+                st.error(f"Initialization failed: {e}")
     else:
         st.success("✓  Chatbot is Online")
 
@@ -614,24 +583,6 @@ with st.sidebar:
     if st.button("🗑️  Clear Chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
-
-    with st.expander("⚙️  Advanced Options"):
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("↺ Re-Scrape", use_container_width=True):
-                clear_scrape_cache()
-                clear_vectorstore()
-                st.session_state.is_initialized = False
-                st.session_state.rag_chain = None
-                st.success("Cache cleared!")
-                st.rerun()
-        with col2:
-            if st.button("↺ Reset VS", use_container_width=True):
-                clear_vectorstore()
-                st.session_state.is_initialized = False
-                st.session_state.rag_chain = None
-                st.success("Vector store cleared!")
-                st.rerun()
 
     st.markdown('<hr class="sb-divider">', unsafe_allow_html=True)
     st.markdown('<span class="sb-section-label">Suggested Questions</span>', unsafe_allow_html=True)

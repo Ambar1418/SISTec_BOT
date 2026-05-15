@@ -108,38 +108,10 @@ def chunk_documents(pages: List[Dict]) -> List[Document]:
 # ─────────────────────────────────────────────
 
 def load_embeddings():
-    """Load the embedding model based on LLM_PROVIDER."""
-    if LLM_PROVIDER == "groq":
-        # For Groq, use local HuggingFace embeddings since Groq doesn't provide them
-        try:
-            from langchain_community.embeddings import HuggingFaceEmbeddings
-            logger.info("Using local HuggingFace embeddings (all-MiniLM-L6-v2).")
-            return HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        except Exception as e:
-            logger.warning(f"HuggingFaceEmbeddings failed: {e}. Falling back to Gemini.")
-
-    if LLM_PROVIDER == "gemini" and GEMINI_API_KEY:
-        try:
-            from langchain_google_genai import GoogleGenerativeAIEmbeddings
-            logger.info("Using Google Gemini embeddings (gemini-embedding-001).")
-            return GoogleGenerativeAIEmbeddings(
-                model="models/gemini-embedding-001",
-                google_api_key=GEMINI_API_KEY,
-            )
-        except ImportError:
-            logger.warning("langchain_google_genai not installed. Falling back to OpenAI.")
-
-    if OPENAI_API_KEY:
-        from langchain_openai import OpenAIEmbeddings
-        logger.info("Using OpenAI embeddings.")
-        return OpenAIEmbeddings(
-            model="text-embedding-3-small",
-            api_key=OPENAI_API_KEY,
-        )
-
-    raise ValueError(
-        "No valid API key found! Set OPENAI_API_KEY or GEMINI_API_KEY in your .env file."
-    )
+    """Load HuggingFace embeddings."""
+    from langchain_huggingface import HuggingFaceEmbeddings
+    logger.info("Using local HuggingFace embeddings (sentence-transformers/all-MiniLM-L6-v2).")
+    return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 
 # ─────────────────────────────────────────────
@@ -333,9 +305,11 @@ def query_rag(chain: "RAGChain", question: str) -> Tuple[str, List[str]]:
 
 
 if __name__ == "__main__":
-    from scraper import scrape_website
-    pages = scrape_website()
-    chain = initialize_rag(pages)
-    answer, sources = query_rag(chain, "What courses does SISTec offer?")
-    print("Answer:", answer)
-    print("Sources:", sources)
+    # Test loading the vectorstore if it exists
+    if vectorstore_exists():
+        chain = initialize_rag([])
+        answer, sources = query_rag(chain, "What courses does SISTec offer?")
+        print("Answer:", answer)
+        print("Sources:", sources)
+    else:
+        print("Vectorstore not found. Run scraper and builder locally first.")
