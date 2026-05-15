@@ -1,6 +1,5 @@
 streamlit==1.37.1
 langchain-groq
 langchain-community
-langchain-huggingface
-faiss-cpu==1.13.0
 python-dotenv
+faiss-cpu==1.13.0

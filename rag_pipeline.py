@@ -108,10 +108,9 @@ def chunk_documents(pages: List[Dict]) -> List[Document]:
 # ─────────────────────────────────────────────
 
 def load_embeddings():
-    """Load HuggingFace embeddings."""
-    from langchain_huggingface import HuggingFaceEmbeddings
-    logger.info("Using local HuggingFace embeddings (sentence-transformers/all-MiniLM-L6-v2).")
-    return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    """Dummy embeddings loader."""
+    logger.info("Embeddings temporarily disabled.")
+    return None
 
 
 # ─────────────────────────────────────────────
