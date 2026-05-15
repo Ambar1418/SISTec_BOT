@@ -1,9 +1,6 @@
-streamlit
-langchain
-langchain-community
-langchain-core
+streamlit==1.37.1
 langchain-groq
+langchain-community
 sentence-transformers
 faiss-cpu==1.7.4
 python-dotenv
-numpy
