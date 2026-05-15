@@ -1,0 +1,14 @@
+[server]
+# Prevent unnecessary reloads and connection drops
+runOnSave = false
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+backgroundColor = "#0f1117"
+secondaryBackgroundColor = "#1a1d27"
+primaryColor = "#7c3aed"
+textColor = "#e2e8f0"
