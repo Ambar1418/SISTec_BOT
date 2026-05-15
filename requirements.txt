@@ -2,5 +2,5 @@ streamlit==1.37.1
 langchain-groq
 langchain-community
 sentence-transformers
-faiss-cpu==1.7.4
+faiss-cpu==1.13.0
 python-dotenv
