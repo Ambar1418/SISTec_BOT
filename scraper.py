@@ -30,21 +30,30 @@ RAW_TEXT_FILE = os.path.join(DATA_DIR, "raw_text.txt")
 # Priority pages to scrape
 PRIORITY_PAGES = [
     "https://www.sistec.ac.in/",
-    "https://www.sistec.ac.in/about-us",
-    "https://www.sistec.ac.in/admissions",
-    "https://www.sistec.ac.in/courses",
-    "https://www.sistec.ac.in/placements",
-    "https://www.sistec.ac.in/facilities",
-    "https://www.sistec.ac.in/departments",
-    "https://www.sistec.ac.in/contact-us",
-    "https://www.sistec.ac.in/events",
-    "https://www.sistec.ac.in/notice-board",
-    "https://www.sistec.ac.in/faculty",
-    "https://www.sistec.ac.in/campus-life",
-    "https://www.sistec.ac.in/research",
-    "https://www.sistec.ac.in/gallery",
-    "https://www.sistec.ac.in/naac",
-    "https://www.sistec.ac.in/iqac",
+    "https://www.sistec.ac.in/about-sagar-group/",
+    "https://www.sistec.ac.in/admission-procedure/",
+    "https://www.sistec.ac.in/training-placement/",
+    "https://www.sistec.ac.in/contact-us/",
+    "https://www.sistec.ac.in/computer-science-engineering/",
+    "https://www.sistec.ac.in/mechanical-engineering/",
+    "https://www.sistec.ac.in/civil-engineering/",
+    "https://www.sistec.ac.in/electrical-electronics-engineering/",
+    "https://www.sistec.ac.in/mba/",
+    "https://www.sistec.ac.in/mca/",
+    "https://www.sistec.ac.in/canteen/",
+    "https://www.sistec.ac.in/library/",
+    "https://www.sistec.ac.in/transport/",
+    "https://www.sistec.ac.in/hostel/",
+    "https://www.sistec.ac.in/computer-science-engineering/",
+    "https://www.sistec.ac.in/mechanical-engineering/",
+    "https://www.sistec.ac.in/civil-engineering/",
+    "https://www.sistec.ac.in/electrical-electronics-engineering/",
+    "https://www.sistec.ac.in/mba/",
+    "https://www.sistec.ac.in/mca/",
+    "https://www.sistec.ac.in/canteen/",
+    "https://www.sistec.ac.in/library/",
+    "https://www.sistec.ac.in/transport/",
+    "https://www.sistec.ac.in/hostel/",
 ]
 
 # Tags to extract meaningful text from
@@ -53,7 +62,7 @@ CONTENT_TAGS = ["p", "h1", "h2", "h3", "h4", "h5", "h6", "li", "td", "th", "span
 # Tags to skip entirely
 SKIP_TAGS = ["script", "style", "nav", "footer", "header", "noscript", "iframe", "form"]
 
-MAX_PAGES = 3           # Maximum pages to crawl (limited to 3 for Gemini free tier quota)
+MAX_PAGES = 50         # Maximum pages to crawl (limited to 3 for Gemini free tier quota)
 REQUEST_DELAY = 0.8     # Seconds between requests (be polite)
 REQUEST_TIMEOUT = 15    # Seconds before giving up
 MAX_RETRIES = 3         # Retry attempts for failed requests
@@ -269,7 +278,7 @@ def scrape_website(progress_callback=None) -> List[Dict]:
         page_data = extract_text_from_soup(soup, url)
         content = page_data["content"]
 
-        if len(content) < 50:
+        if len(content) < 20:
             logger.info(f"Skipping {url} — insufficient content.")
             continue
 
