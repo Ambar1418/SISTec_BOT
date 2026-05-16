@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 # LangChain imports (LangChain 1.x LCEL style)
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -170,14 +170,25 @@ def load_llm():
 # Vector Store
 # ─────────────────────────────────────────────
 
-def build_vectorstore(documents: List[Document]) -> FAISS:
-    """Build and persist a FAISS vector store."""
+def build_vectorstore(documents: List[Document]):
+    """Build and persist a Chroma vector store."""
+
+    from langchain_community.vectorstores import Chroma
+
     os.makedirs(VECTORSTORE_DIR, exist_ok=True)
+
     embeddings = load_embeddings()
-    logger.info(f"Building FAISS index with {len(documents)} chunks...")
-    vs = FAISS.from_documents(documents, embeddings)
-    vs.save_local(VECTORSTORE_DIR)
+
+    logger.info(f"Building Chroma index with {len(documents)} chunks...")
+
+    vs = Chroma.from_documents(
+        documents,
+        embeddings,
+        persist_directory=VECTORSTORE_DIR
+    )
+
     logger.info(f"Vector store saved to '{VECTORSTORE_DIR}'.")
+
     return vs
 
 
