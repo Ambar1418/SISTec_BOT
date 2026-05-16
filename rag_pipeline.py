@@ -192,22 +192,27 @@ def build_vectorstore(documents: List[Document]):
     return vs
 
 
-def load_vectorstore() -> Optional[FAISS]:
-    """Load an existing FAISS vector store from disk."""
-    if not os.path.exists(os.path.join(VECTORSTORE_DIR, "index.faiss")):
+def load_vectorstore():
+    """Load Chroma vector store."""
+
+    from langchain_community.vectorstores import Chroma
+
+    if not os.path.exists(VECTORSTORE_DIR):
         return None
+
     embeddings = load_embeddings()
-    logger.info("Loading cached FAISS vector store...")
-    return FAISS.load_local(
-        VECTORSTORE_DIR,
-        embeddings,
-        allow_dangerous_deserialization=True,
+
+    logger.info("Loading Chroma vector store...")
+
+    return Chroma(
+        persist_directory=VECTORSTORE_DIR,
+        embedding_function=embeddings
     )
 
 
 def vectorstore_exists() -> bool:
     """Check if a FAISS index file exists on disk."""
-    return os.path.exists(os.path.join(VECTORSTORE_DIR, "index.faiss"))
+    return os.path.exists(VECTORSTORE_DIR)
 
 
 def clear_vectorstore():
@@ -228,7 +233,7 @@ class RAGChain:
     Replaces the deprecated RetrievalQA for LangChain 1.x compatibility.
     """
 
-    def __init__(self, vectorstore: FAISS):
+    def __init__(self, vectorstore):
         self.llm = load_llm()
         self.prompt = PromptTemplate(
             template=SYSTEM_PROMPT,
