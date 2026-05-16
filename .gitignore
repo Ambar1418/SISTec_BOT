@@ -1,7 +1,3 @@
-# Data storage for scraper output (auto-generated, do not commit)
-data/
-vectorstore/
-
 # Python
 __pycache__/
 *.pyc
